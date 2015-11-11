@@ -10,11 +10,18 @@ namespace webtech_lab4_linkanalysis
 {
     class Program
     {
-        static List<Page> visitedPages = new List<Page>(); //the pages that have been visited
+        static Pages visitedPages = new Pages(); //the pages that have been visited
+
         const string LINKFILE = @"http://www.dcs.bbk.ac.uk/~martin/sewn/ls4/sewn-crawl-2015.txt";
+
+        const string TESTFILE = @"D:\bsc\web tec\coursework 4\test.txt";
         static void Main(string[] args)
         {
             ConvertFile(ReturnLinkFile());
+            //ConvertFile(ReturnLinkFile_TEST());
+            visitedPages.PopulateMatrix();
+            visitedPages.matrix.DoQuestionA();
+        
         }
 
         static String ReturnLinkFile()
@@ -25,6 +32,11 @@ namespace webtech_lab4_linkanalysis
             return reader.ReadToEnd();
         }
 
+        static String ReturnLinkFile_TEST()
+        {
+            return File.ReadAllText(TESTFILE);
+        }
+
         static void ConvertFile(string linkfile)
         {
             List<String> fileLines = linkfile.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
@@ -32,11 +44,10 @@ namespace webtech_lab4_linkanalysis
             Page page = null;
 
             foreach(string line in fileLines)
-            {
-                
+            {               
                 if (line.Length > 9 && line.Substring(0, 9) == "Visited: ") 
                 {
-                    if(page != null) visitedPages.Add(page);
+                    if(page != null) visitedPages.list.Add(page);
                     page = new Page(line.Trim().Substring(9));  //create new object as page visited
                 }
                 else if (line.Length > 6 && line.Trim().Substring(0, 6) == "Link: ") 
@@ -46,7 +57,7 @@ namespace webtech_lab4_linkanalysis
                
             }
 
-            visitedPages.Add(page); //last one
+            visitedPages.list.Add(page); //last one
 
         }//ConvertFile
 
