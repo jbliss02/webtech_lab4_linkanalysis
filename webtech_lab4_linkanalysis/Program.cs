@@ -13,14 +13,13 @@ namespace webtech_lab4_linkanalysis
         static Pages visitedPages = new Pages(); //the pages that have been visited
 
         const string LINKFILE = @"http://www.dcs.bbk.ac.uk/~martin/sewn/ls4/sewn-crawl-2015.txt";
-
         const string TESTFILE = @"D:\bsc\web tec\coursework 4\test.txt";
         static void Main(string[] args)
         {
             ConvertFile(ReturnLinkFile());
             //ConvertFile(ReturnLinkFile_TEST());
             visitedPages.PopulateMatrix();
-            visitedPages.matrix.DoQuestionA();
+            visitedPages.matrix.DoQuestions();
         
         }
 
@@ -60,7 +59,6 @@ namespace webtech_lab4_linkanalysis
             visitedPages.list.Add(page); //last one
 
         }//ConvertFile
-
 
     }
 }
