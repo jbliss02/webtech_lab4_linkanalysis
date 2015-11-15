@@ -20,7 +20,7 @@ namespace webtech_lab4_linkanalysis
             //ConvertFile(ReturnLinkFile_TEST());
             visitedPages.PopulateMatrix();
             visitedPages.matrix.DoQuestions();
-        
+            PageRankings pageRankings = new PageRankings(visitedPages.matrix);
         }
 
         static String ReturnLinkFile()
