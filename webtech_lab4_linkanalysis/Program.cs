@@ -15,13 +15,14 @@ namespace webtech_lab4_linkanalysis
 
         const string LINKFILE = @"http://www.dcs.bbk.ac.uk/~martin/sewn/ls4/sewn-crawl-2015.txt";
         const string TESTFILE = @"D:\bsc\web tec\coursework 4\test.txt";
+        const string TESTFILE2 = @"D:\bsc\web tec\coursework 4\test2.txt";
         private const string FILEFOLDER = @"d:\bsc\web tec\coursework 4\";
 
         static void Main(string[] args)
         {
-            visitedPages = new Pages(Pages.APPROACH.REMOVEDANGLERS);
-            ConvertFile(ReturnLinkFile());
-            //ConvertFile(ReturnLinkFile_TEST());
+            visitedPages = new Pages(Pages.STRATEGY.REMOVEDANGLERS);
+            //ConvertFile(ReturnLinkFile());
+            ConvertFile(ReturnLinkFile_TEST());
             visitedPages.PopulateMatrix();
             visitedPages.matrix.DoQuestions(FILEFOLDER);
 
@@ -39,7 +40,7 @@ namespace webtech_lab4_linkanalysis
 
         static String ReturnLinkFile_TEST()
         {
-            return File.ReadAllText(TESTFILE);
+            return File.ReadAllText(TESTFILE2);
         }
 
         static void ConvertFile(string linkfile)

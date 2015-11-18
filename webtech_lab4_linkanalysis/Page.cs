@@ -8,14 +8,14 @@ namespace webtech_lab4_linkanalysis
 {
     public class Pages
     {
-        public enum APPROACH {UNORTHADOX, REMOVEDANGLERS } //the solution we are using to create the depenedency matrix
-        public APPROACH approach;
+        public enum STRATEGY {UNORTHADOX, REMOVEDANGLERS } //the solution we are using to create the depenedency matrix
+        public STRATEGY approach;
         //UNORTHADOX leaves dangling pages in (the axis then have different sizes and this is not an adjaceny matirx)
         //REMOVEDANGLERS removes any pages in links that are not visited
 
         public const double TELEPORT = 0.15;
 
-        public Pages(APPROACH approach) { this.approach = approach; }
+        public Pages(STRATEGY approach) { this.approach = approach; }
 
         public List<Page> allVisited = new List<Page>(); //every visited page
 
@@ -30,7 +30,7 @@ namespace webtech_lab4_linkanalysis
             matrix = new Matrix();
 
             PopulateAllLinks(); //extract the pages and links
-            if (approach == APPROACH.REMOVEDANGLERS) { RemoveAllDanglers(); }
+            if (approach == STRATEGY.REMOVEDANGLERS) { RemoveAllDanglers(); }
 
             for (int i = 0; i < allVisited.Count; i++)
             {
