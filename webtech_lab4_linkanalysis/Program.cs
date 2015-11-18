@@ -10,17 +10,23 @@ namespace webtech_lab4_linkanalysis
 {
     class Program
     {
-        static Pages visitedPages = new Pages(); //the pages that have been visited
+
+        static Pages visitedPages; //the pages that have been visited
 
         const string LINKFILE = @"http://www.dcs.bbk.ac.uk/~martin/sewn/ls4/sewn-crawl-2015.txt";
         const string TESTFILE = @"D:\bsc\web tec\coursework 4\test.txt";
+        private const string FILEFOLDER = @"d:\bsc\web tec\coursework 4\";
+
         static void Main(string[] args)
         {
+            visitedPages = new Pages(Pages.APPROACH.REMOVEDANGLERS);
             ConvertFile(ReturnLinkFile());
             //ConvertFile(ReturnLinkFile_TEST());
             visitedPages.PopulateMatrix();
-            visitedPages.matrix.DoQuestions();
-            PageRankings pageRankings = new PageRankings(visitedPages.matrix);
+            visitedPages.matrix.DoQuestions(FILEFOLDER);
+
+            visitedPages.DoPageRanks(20, FILEFOLDER);
+
         }
 
         static String ReturnLinkFile()
@@ -46,7 +52,7 @@ namespace webtech_lab4_linkanalysis
             {               
                 if (line.Length > 9 && line.Substring(0, 9) == "Visited: ") 
                 {
-                    if(page != null) visitedPages.list.Add(page);
+                    if(page != null) visitedPages.allVisited.Add(page);
                     page = new Page(line.Trim().Substring(9));  //create new object as page visited
                 }
                 else if (line.Length > 6 && line.Trim().Substring(0, 6) == "Link: ") 
@@ -56,7 +62,7 @@ namespace webtech_lab4_linkanalysis
                
             }
 
-            visitedPages.list.Add(page); //last one
+            visitedPages.allVisited.Add(page); //last one
 
         }//ConvertFile
 

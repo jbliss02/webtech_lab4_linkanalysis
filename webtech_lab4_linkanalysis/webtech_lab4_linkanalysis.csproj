@@ -43,7 +43,6 @@
   <ItemGroup>
     <Compile Include="Matrix.cs" />
     <Compile Include="Page.cs" />
-    <Compile Include="PageRank.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
