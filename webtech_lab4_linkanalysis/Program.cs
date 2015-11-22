@@ -21,13 +21,13 @@ namespace webtech_lab4_linkanalysis
         static void Main(string[] args)
         {
             visitedPages = new Pages(Pages.STRATEGY.REMOVEDANGLERS);
-            //ConvertFile(ReturnLinkFile());
-            ConvertFile(ReturnLinkFile_TEST());
+            ConvertFile(ReturnLinkFile());
+            //ConvertFile(ReturnLinkFile_TEST());
             visitedPages.PopulateMatrix();
             visitedPages.matrix.DoQuestions(FILEFOLDER);
-
-            visitedPages.DoPageRanks(20, FILEFOLDER);
-
+            visitedPages.DoPageRanks(60, FILEFOLDER);
+            Console.WriteLine("Finished");
+            Console.ReadLine();
         }
 
         static String ReturnLinkFile()

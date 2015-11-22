@@ -8,13 +8,14 @@ namespace webtech_lab4_linkanalysis
 {
     public class Pages
     {
-        public enum STRATEGY {UNORTHADOX, REMOVEDANGLERS } //the solution we are using to create the depenedency matrix
+        public enum STRATEGY {UNORTHADOX, REMOVEDANGLERS, ADDVISITED_1 } //the solution we are using to create the depenedency matrix
         public STRATEGY approach;
-        //UNORTHADOX leaves dangling pages in (the axis then have different sizes and this is not an adjaceny matirx)
-        //REMOVEDANGLERS removes any pages in links that are not visited
+        //UNORTHADOX - leaves dangling pages in (the axis then have different sizes and this is not an adjaceny matirx)
+        //REMOVEDANGLERS - removes any pages in links that are not visited
+        //ADDVISITED_1 - adds non visited links as visited, but with no inlinks
 
         public const double TELEPORT = 0.15;
-
+        public const double CONVERGENCETARGET = 0.0001; 
         public Pages(STRATEGY approach) { this.approach = approach; }
 
         public List<Page> allVisited = new List<Page>(); //every visited page
@@ -22,6 +23,10 @@ namespace webtech_lab4_linkanalysis
         public List<String> allLinks; //every, unique, link in the pages list
 
         public Matrix matrix;
+
+        private List<Double> averageConvergence = new List<double>(); //saves the average convergence on each iteration of pageRank
+        private List<Double> averageConvergencePercent = new List<double>(); //saves the average convergence percent on each iteration of pageRank 
+
         public void PopulateMatrix()
         {
             //populates the matrix. Gets a list of all the unique inlinks. Each outlink object (CLASS) is then sent this list
@@ -31,6 +36,7 @@ namespace webtech_lab4_linkanalysis
 
             PopulateAllLinks(); //extract the pages and links
             if (approach == STRATEGY.REMOVEDANGLERS) { RemoveAllDanglers(); }
+            if (approach == STRATEGY.ADDVISITED_1) { AddUnvisited(); }
 
             for (int i = 0; i < allVisited.Count; i++)
             {
@@ -72,15 +78,37 @@ namespace webtech_lab4_linkanalysis
                 //may have removed the last element, if so shift i
                 if (i == allVisited.Count) { i--; }
             }
+       
+        }//RemoveAllDanglers
 
-        
+        private void AddUnvisited()
+        {
+            //adds unvisited links as a page, but with no
+            for(int i = 0; i < allLinks.Count; i++)
+            {
+                var exists = allVisited.Where(p => p.pageUrl == allLinks[i]).Any();
+                if (!exists) { allVisited.Add(new Page(allLinks[i])); }
+
+            }//allLinks
+
         }
 
         public void DoPageRanks(int n, string fileFolder)
         {
-            for (int i = 0; i < n; i++) { SetPageRanks(); }
-            WritePageRanks(fileFolder, n);
-        }
+            //creates multiple pagerank iterations, terminates once the CONVERGENCETARGET has been hit 
+
+            int count = 0;
+            while (averageConvergencePercent.Count < 2 || (averageConvergencePercent.Last() - averageConvergencePercent[averageConvergencePercent.Count - 2]) > CONVERGENCETARGET)
+            {                
+                SetPageRanks();
+                if (count > 1) { SetConvergence(); }
+                if (count > 3) { Console.WriteLine(averageConvergencePercent.Last() - averageConvergencePercent[averageConvergencePercent.Count - 2]); }
+                count++;               
+            }
+
+            WritePageRanks(fileFolder, count);
+
+        }//DoPageRanks
 
         private void SetPageRanks()
         {
@@ -108,14 +136,41 @@ namespace webtech_lab4_linkanalysis
 
         }//SetPageRanks
 
+        private void SetConvergence()
+        {
+            //after each pageRank iteration, get the average convergence and add to the list
+            double total = 0;
+            for(int i = 0; i < allVisited.Count; i++)
+            {
+                total += allVisited[i].convergence;
+            }
+
+            averageConvergence.Add(total / allVisited.Count);
+
+            if(averageConvergence.Count > 1)
+            {
+                double diffPercent = (averageConvergence.Last() - averageConvergence[averageConvergence.Count - 2]) / averageConvergence[averageConvergence.Count - 2];
+                averageConvergencePercent.Add(diffPercent);
+                //Console.WriteLine(diffPercent);
+                //Console.WriteLine(total / allVisited.Count);
+            }
+
+        }//SetConvergence
+
         private void WritePageRanks(String fileFolder, int nIterations)
         {
             //writes the page ranks to a file
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileFolder + "pageRankings.txt"))
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileFolder + "pageRank015.txt"))
             {
+                //write the headers
+                file.WriteLine("# iterations: " + nIterations);
+                for (int i = 0; i < allVisited.Count; i++) { file.Write(allVisited[i].pageUrl + " \t "); }
+                file.WriteLine();
+
+                //write the pageranks
                 for (int i = 0; i < nIterations; i++)
                 {
-                    for(int n = 0; n < allVisited.Count; n++)
+                    for (int n = 0; n < allVisited.Count; n++)
                     {
                         file.Write(allVisited[n].pageRank[i] + " \t ");
                     }
@@ -170,6 +225,15 @@ namespace webtech_lab4_linkanalysis
         }
 
         public List<double> pageRank { get; set; } //numeric value of the page rank, initially set to 1
+
+        public Double convergence
+        {   //returns the difference between the last 2 pageranks
+            get
+            {
+                if (pageRank.Count < 2) { throw new Exception("Convergence cannot be returned, not enough pageranks"); }
+                return pageRank[pageRank.Count - 1] - pageRank[pageRank.Count - 2];
+            }
+        }
 
     }
 }
